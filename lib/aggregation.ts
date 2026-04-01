@@ -117,6 +117,16 @@ function formatCurrency(value: number) {
   return `Rs ${value.toLocaleString("en-IN")}`;
 }
 
+function normalizeInstituteLabel(value: string | null | undefined) {
+  if (!value) {
+    return value ?? "";
+  }
+
+  return value.includes("Leadership and Management Studi")
+    ? "T. A. Pai Management Institute (TAPMI), Bangalore"
+    : value;
+}
+
 function formatPercent(value: number, total: number) {
   if (!total) {
     return "0%";
@@ -197,7 +207,7 @@ function uniqueOptions(
     }
 
     if (!map.has(id)) {
-      map.set(id, getLabel(record));
+      map.set(id, normalizeInstituteLabel(getLabel(record)));
     }
   });
 
