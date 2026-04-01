@@ -12,7 +12,7 @@ function sanitizeFileName(value: string) {
 
 function sanitizeSheetName(value: string) {
   return value
-    .replace(/[\\\/?*\[\]]/g, "_")
+    .replace(/[\\/?*[\]]/g, "_")
     .slice(0, 31)
     .trim() || "Sheet";
 }
@@ -77,7 +77,7 @@ function downloadWorkbook(filename: string, sheets: Array<{ name: string; data: 
   });
 
   const workbookArray = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([workbookArray], { type: "application/octet-stream" });
+  const blob = new globalThis.Blob([workbookArray], { type: "application/octet-stream" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;

@@ -581,19 +581,6 @@ function buildHierarchy(records: EnrichedCollaboration[], profile: CurrentProfil
   };
 }
 
-function groupCount(records: EnrichedCollaboration[], getLabel: (record: EnrichedCollaboration) => string) {
-  const counts = new Map<string, number>();
-
-  records.forEach((record) => {
-    const label = getLabel(record) || "Unknown";
-    counts.set(label, (counts.get(label) ?? 0) + 1);
-  });
-
-  return Array.from(counts.entries())
-    .map(([name, collaborations]) => ({ name, collaborations }))
-    .sort((a, b) => b.collaborations - a.collaborations || a.name.localeCompare(b.name));
-}
-
 function groupMetric(
   records: EnrichedCollaboration[],
   getLabel: (record: EnrichedCollaboration) => string,
@@ -625,19 +612,6 @@ function groupScore(records: EnrichedCollaboration[], getLabel: (record: Enriche
     .slice(0, 5);
 }
 
-function getGroupLabel(scopeLevel: HierarchyLevel) {
-  switch (scopeLevel) {
-    case "campus":
-      return "institute";
-    case "institute":
-      return "department";
-    case "department":
-      return "industry";
-    default:
-      return "campus";
-  }
-}
-
 function getGroupingAccessor(scopeLevel: HierarchyLevel) {
   if (scopeLevel === "department") {
     return (record: EnrichedCollaboration) => record.industryName;
@@ -654,8 +628,8 @@ function getGroupingAccessor(scopeLevel: HierarchyLevel) {
   return (record: EnrichedCollaboration) => record.campusName;
 }
 
-function getTopNames<T extends { name: string; [key: string]: number }>(
-  items: T[],
+function getTopNames(
+  items: Array<{ name: string } & Partial<Record<"value" | "collaborations" | "score", number>>>,
   valueKey: "value" | "collaborations" | "score"
 ) {
   if (items.length === 0) {
@@ -743,22 +717,15 @@ function getChartMeta(scopeLevel: HierarchyLevel, scopeLabel: string): ChartMeta
 function buildInsights(params: {
   hierarchy: DashboardHierarchy;
   records: EnrichedCollaboration[];
-  topIndustries: ChartPoint[];
-  comparison: ComparisonPoint[];
   totals: ReturnType<typeof summarize>;
 }) {
-  const { hierarchy, records, topIndustries, comparison, totals } = params;
+  const { hierarchy, records, totals } = params;
   const groupingAccessor = getGroupingAccessor(hierarchy.scopeLevel);
-  const groupLabel = getGroupLabel(hierarchy.scopeLevel);
   const internshipsLeaders = groupMetric(records, groupingAccessor, (record) => record.internships);
   const placementsLeaders = groupMetric(records, groupingAccessor, (record) => record.placements);
-  const topComparison = comparison[0];
-  const topIndustry = topIndustries[0];
   const internshipsLeader = internshipsLeaders[0];
   const placementsLeader = placementsLeaders[0];
 
-  const topComparisonNames = getTopNames(comparison, "value");
-  const topIndustryNames = getTopNames(topIndustries, "value");
   const internshipsNames = getTopNames(internshipsLeaders, "value");
   const placementsNames = getTopNames(placementsLeaders, "value");
 
@@ -887,8 +854,6 @@ export async function getDashboardData(
   const insights = buildInsights({
     hierarchy,
     records,
-    topIndustries,
-    comparison,
     totals
   });
 
@@ -992,9 +957,7 @@ export async function getDashboardData(
       performers
     },
     topIndustries,
-    drilldown
+    drilldown,
+    records
   };
 }
-
-
-

@@ -43,7 +43,7 @@ function buildCsv(rows: CollaborationListItem[]) {
 export function CollaborationDownloadButton({ rows }: { rows: CollaborationListItem[] }) {
   function handleDownload() {
     const csv = buildCsv(rows);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new globalThis.Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;

@@ -3,6 +3,9 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 
 export default [
+  {
+    ignores: [".next/**", "next-env.d.ts", "postcss.config.js"],
+  },
   js.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],

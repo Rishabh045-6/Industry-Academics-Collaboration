@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState } from "react";
 import { ChartsPanel } from "@/components/charts-panel";
 import { DrilldownTable } from "@/components/drilldown-table";
 import { InfoTooltip } from "@/components/info-tooltip";
@@ -20,7 +20,7 @@ function SummaryCard({
   helper: string;
   onClick: () => void;
 }) {
-  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+  function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       onClick();

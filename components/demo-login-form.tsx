@@ -3,7 +3,6 @@
 import { useFormStatus } from "react-dom";
 import { useMemo, useState } from "react";
 import { login } from "@/lib/supabase/action";
-import { ROLES } from "@/lib/roles";
 import { RoleKey } from "@/lib/types";
 
 type StepKey = "role" | "campus" | "institute" | "department" | "field" | "credentials";
