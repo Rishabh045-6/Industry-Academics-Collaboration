@@ -9,7 +9,7 @@
 
 export type ScopeLevel = "department" | "institute" | "campus" | "university";
 export type HierarchyLevel = ScopeLevel | "field";
-export type FieldDomain = "Health Sciences" | "Technical, Management and Humanities" | "Grants & Consultancy";
+export type FieldDomain = "Health Sciences" | "Technical, Management and Humanities";
 
 export type ActivityBlock = {
   trainings: number;
@@ -115,4 +115,3 @@ export type DashboardHierarchy = {
   instituteOptions: HierarchyOption[];
   departmentOptions: HierarchyOption[];
 };
-

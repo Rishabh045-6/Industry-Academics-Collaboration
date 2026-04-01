@@ -142,26 +142,6 @@ const campusHierarchy: CampusOption[] = [
           { value: "MIRM-BLR-3", label: "Dept 3" },
           { value: "MIRM-BLR-4", label: "Dept 4" }
         ]
-      },
-      {
-        value: "DPP-BLR",
-        label: "Department of Public Policy (DPP)",
-        departments: [
-          { value: "DPP-BLR-1", label: "Dept 1" },
-          { value: "DPP-BLR-2", label: "Dept 2" },
-          { value: "DPP-BLR-3", label: "Dept 3" },
-          { value: "DPP-BLR-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCHP-BLR",
-        label: "Manipal College of Health Professions (MCHP), Bangalore",
-        departments: [
-          { value: "MCHP-BLR-1", label: "Dept 1" },
-          { value: "MCHP-BLR-2", label: "Dept 2" },
-          { value: "MCHP-BLR-3", label: "Dept 3" },
-          { value: "MCHP-BLR-4", label: "Dept 4" }
-        ]
       }
     ]
   },
@@ -169,136 +149,6 @@ const campusHierarchy: CampusOption[] = [
     value: "MPL",
     label: "Manipal campus",
     institutes: [
-      {
-        value: "KMC-MPL",
-        label: "Kasturba Medical College (KMC), Manipal",
-        departments: [
-          { value: "KMC-MPL-1", label: "Dept 1" },
-          { value: "KMC-MPL-2", label: "Dept 2" },
-          { value: "KMC-MPL-3", label: "Dept 3" },
-          { value: "KMC-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCODS-MPL",
-        label: "Manipal College of Dental Sciences (MCODS), Manipal",
-        departments: [
-          { value: "MCODS-MPL-1", label: "Dept 1" },
-          { value: "MCODS-MPL-2", label: "Dept 2" },
-          { value: "MCODS-MPL-3", label: "Dept 3" },
-          { value: "MCODS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCOPS-MPL",
-        label: "Manipal College of Pharmaceutical Sciences (MCOPS)",
-        departments: [
-          { value: "MCOPS-MPL-1", label: "Dept 1" },
-          { value: "MCOPS-MPL-2", label: "Dept 2" },
-          { value: "MCOPS-MPL-3", label: "Dept 3" },
-          { value: "MCOPS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCON-MPL",
-        label: "Manipal College of Nursing (MCON)",
-        departments: [
-          { value: "MCON-MPL-1", label: "Dept 1" },
-          { value: "MCON-MPL-2", label: "Dept 2" },
-          { value: "MCON-MPL-3", label: "Dept 3" },
-          { value: "MCON-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCHP-MPL",
-        label: "Manipal College of Health Professions (MCHP)",
-        departments: [
-          { value: "MCHP-MPL-1", label: "Dept 1" },
-          { value: "MCHP-MPL-2", label: "Dept 2" },
-          { value: "MCHP-MPL-3", label: "Dept 3" },
-          { value: "MCHP-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MSLS-MPL",
-        label: "Manipal School of Life Sciences (MSLS)",
-        departments: [
-          { value: "MSLS-MPL-1", label: "Dept 1" },
-          { value: "MSLS-MPL-2", label: "Dept 2" },
-          { value: "MSLS-MPL-3", label: "Dept 3" },
-          { value: "MSLS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "PSPH-MPL",
-        label: "Prasanna School of Public Health (PSPH)",
-        departments: [
-          { value: "PSPH-MPL-1", label: "Dept 1" },
-          { value: "PSPH-MPL-2", label: "Dept 2" },
-          { value: "PSPH-MPL-3", label: "Dept 3" },
-          { value: "PSPH-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MIV-MPL",
-        label: "Manipal Institute of Virology (MIV)",
-        departments: [
-          { value: "MIV-MPL-1", label: "Dept 1" },
-          { value: "MIV-MPL-2", label: "Dept 2" },
-          { value: "MIV-MPL-3", label: "Dept 3" },
-          { value: "MIV-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DBMS-MPL",
-        label: "Department of Basic Medical Sciences (DBMS)",
-        departments: [
-          { value: "DBMS-MPL-1", label: "Dept 1" },
-          { value: "DBMS-MPL-2", label: "Dept 2" },
-          { value: "DBMS-MPL-3", label: "Dept 3" },
-          { value: "DBMS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCBR-MPL",
-        label: "Manipal Centre for Biotherapeutics Research (MCBR)",
-        departments: [
-          { value: "MCBR-MPL-1", label: "Dept 1" },
-          { value: "MCBR-MPL-2", label: "Dept 2" },
-          { value: "MCBR-MPL-3", label: "Dept 3" },
-          { value: "MCBR-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "CIMR-MPL",
-        label: "Centre for Integrative Medicine & Research (CIMR)",
-        departments: [
-          { value: "CIMR-MPL-1", label: "Dept 1" },
-          { value: "CIMR-MPL-2", label: "Dept 2" },
-          { value: "CIMR-MPL-3", label: "Dept 3" },
-          { value: "CIMR-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MMMC-MPL",
-        label: "Melaka Manipal Medical College (MMMC)",
-        departments: [
-          { value: "MMMC-MPL-1", label: "Dept 1" },
-          { value: "MMMC-MPL-2", label: "Dept 2" },
-          { value: "MMMC-MPL-3", label: "Dept 3" },
-          { value: "MMMC-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DBR-MPL",
-        label: "Department of Biotherapeutics Research (DBR)",
-        departments: [
-          { value: "DBR-MPL-1", label: "Dept 1" },
-          { value: "DBR-MPL-2", label: "Dept 2" },
-          { value: "DBR-MPL-3", label: "Dept 3" },
-          { value: "DBR-MPL-4", label: "Dept 4" }
-        ]
-      },
       {
         value: "MIT-MPL",
         label: "Manipal Institute of Technology (MIT), Manipal",
@@ -310,36 +160,6 @@ const campusHierarchy: CampusOption[] = [
         ]
       },
       {
-        value: "MSIS-MPL",
-        label: "Manipal School of Information Sciences (MSIS)",
-        departments: [
-          { value: "MSIS-MPL-1", label: "Dept 1" },
-          { value: "MSIS-MPL-2", label: "Dept 2" },
-          { value: "MSIS-MPL-3", label: "Dept 3" },
-          { value: "MSIS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MSAP-MPL",
-        label: "Manipal School of Architecture & Planning (MSAP)",
-        departments: [
-          { value: "MSAP-MPL-1", label: "Dept 1" },
-          { value: "MSAP-MPL-2", label: "Dept 2" },
-          { value: "MSAP-MPL-3", label: "Dept 3" },
-          { value: "MSAP-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "WGSHA-MPL",
-        label: "Welcomgroup Graduate School of Hotel Administration (WGSHA)",
-        departments: [
-          { value: "WGSHA-MPL-1", label: "Dept 1" },
-          { value: "WGSHA-MPL-2", label: "Dept 2" },
-          { value: "WGSHA-MPL-3", label: "Dept 3" },
-          { value: "WGSHA-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
         value: "TAPMI-MPL",
         label: "T. A. Pai Management Institute (TAPMI)",
         departments: [
@@ -347,146 +167,6 @@ const campusHierarchy: CampusOption[] = [
           { value: "TAPMI-MPL-2", label: "Dept 2" },
           { value: "TAPMI-MPL-3", label: "Dept 3" },
           { value: "TAPMI-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MIM-MPL",
-        label: "Manipal Institute of Management (MIM)",
-        departments: [
-          { value: "MIM-MPL-1", label: "Dept 1" },
-          { value: "MIM-MPL-2", label: "Dept 2" },
-          { value: "MIM-MPL-3", label: "Dept 3" },
-          { value: "MIM-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DOC-MPL",
-        label: "Department of Commerce (DOC)",
-        departments: [
-          { value: "DOC-MPL-1", label: "Dept 1" },
-          { value: "DOC-MPL-2", label: "Dept 2" },
-          { value: "DOC-MPL-3", label: "Dept 3" },
-          { value: "DOC-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DOD-MPL",
-        label: "Department of Design (DOD)",
-        departments: [
-          { value: "DOD-MPL-1", label: "Dept 1" },
-          { value: "DOD-MPL-2", label: "Dept 2" },
-          { value: "DOD-MPL-3", label: "Dept 3" },
-          { value: "DOD-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCNS-MPL",
-        label: "Manipal Centre for Natural Sciences (MCNS)",
-        departments: [
-          { value: "MCNS-MPL-1", label: "Dept 1" },
-          { value: "MCNS-MPL-2", label: "Dept 2" },
-          { value: "MCNS-MPL-3", label: "Dept 3" },
-          { value: "MCNS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DAMP-MPL",
-        label: "Department of Atomic and Molecular Physics (DAMP)",
-        departments: [
-          { value: "DAMP-MPL-1", label: "Dept 1" },
-          { value: "DAMP-MPL-2", label: "Dept 2" },
-          { value: "DAMP-MPL-3", label: "Dept 3" },
-          { value: "DAMP-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MIC-MPL",
-        label: "Manipal Institute of Communication (MIC)",
-        departments: [
-          { value: "MIC-MPL-1", label: "Dept 1" },
-          { value: "MIC-MPL-2", label: "Dept 2" },
-          { value: "MIC-MPL-3", label: "Dept 3" },
-          { value: "MIC-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MISHA-MPL",
-        label: "Manipal Institute of Social Sciences, Humanities and Arts (MISHA)",
-        departments: [
-          { value: "MISHA-MPL-1", label: "Dept 1" },
-          { value: "MISHA-MPL-2", label: "Dept 2" },
-          { value: "MISHA-MPL-3", label: "Dept 3" },
-          { value: "MISHA-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCH-MPL",
-        label: "Manipal Centre for Humanities (MCH)",
-        departments: [
-          { value: "MCH-MPL-1", label: "Dept 1" },
-          { value: "MCH-MPL-2", label: "Dept 2" },
-          { value: "MCH-MPL-3", label: "Dept 3" },
-          { value: "MCH-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "MCES-MPL",
-        label: "Manipal Centre for European Studies (MCES)",
-        departments: [
-          { value: "MCES-MPL-1", label: "Dept 1" },
-          { value: "MCES-MPL-2", label: "Dept 2" },
-          { value: "MCES-MPL-3", label: "Dept 3" },
-          { value: "MCES-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "GCPAS-MPL",
-        label: "Gandhian Centre for Philosophical Arts & Sciences (GCPAS)",
-        departments: [
-          { value: "GCPAS-MPL-1", label: "Dept 1" },
-          { value: "GCPAS-MPL-2", label: "Dept 2" },
-          { value: "GCPAS-MPL-3", label: "Dept 3" },
-          { value: "GCPAS-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DGIR-MPL",
-        label: "Department of Geopolitics & International Relations (DGIR)",
-        departments: [
-          { value: "DGIR-MPL-1", label: "Dept 1" },
-          { value: "DGIR-MPL-2", label: "Dept 2" },
-          { value: "DGIR-MPL-3", label: "Dept 3" },
-          { value: "DGIR-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DOP-MPL",
-        label: "Department of Philosophy (DOP)",
-        departments: [
-          { value: "DOP-MPL-1", label: "Dept 1" },
-          { value: "DOP-MPL-2", label: "Dept 2" },
-          { value: "DOP-MPL-3", label: "Dept 3" },
-          { value: "DOP-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DOL-MPL",
-        label: "Department of Languages (DOL)",
-        departments: [
-          { value: "DOL-MPL-1", label: "Dept 1" },
-          { value: "DOL-MPL-2", label: "Dept 2" },
-          { value: "DOL-MPL-3", label: "Dept 3" },
-          { value: "DOL-MPL-4", label: "Dept 4" }
-        ]
-      },
-      {
-        value: "DLIS-MPL",
-        label: "Department of Library and Information Sciences (DLIS)",
-        departments: [
-          { value: "DLIS-MPL-1", label: "Dept 1" },
-          { value: "DLIS-MPL-2", label: "Dept 2" },
-          { value: "DLIS-MPL-3", label: "Dept 3" },
-          { value: "DLIS-MPL-4", label: "Dept 4" }
         ]
       }
     ]
@@ -623,8 +303,7 @@ const campusHierarchy: CampusOption[] = [
 
 const fieldOptions: FieldOption[] = [
   { value: "Health Sciences", label: "Health Sciences" },
-  { value: "Technical, Management and Humanities", label: "Technical, Management and Humanities" },
-  { value: "Grants & Consultancy", label: "Grants & Consultancy" }
+  { value: "Technical, Management and Humanities", label: "Technical, Management and Humanities" }
 ];
 
 const roleStepMap: Record<RoleKey, StepKey[]> = {

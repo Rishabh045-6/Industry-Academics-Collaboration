@@ -11,8 +11,7 @@ import { FieldDomain } from "@/lib/types";
 
 const FIELD_DOMAINS: FieldDomain[] = [
   "Health Sciences",
-  "Technical, Management and Humanities",
-  "Grants & Consultancy"
+  "Technical, Management and Humanities"
 ];
 
 function hasAssignedScope(profile: {

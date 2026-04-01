@@ -102,8 +102,7 @@ export type DashboardData = {
 
 const FIELD_DOMAINS: FieldDomain[] = [
   "Health Sciences",
-  "Technical, Management and Humanities",
-  "Grants & Consultancy"
+  "Technical, Management and Humanities"
 ];
 
 function toNumber(value: unknown) {
@@ -179,14 +178,6 @@ function classifyFieldDomain(params: {
     )
   ) {
     return "Health Sciences" satisfies FieldDomain;
-  }
-
-  if (
-    ["management", "mba", "leadership", "business", "consultancy", "grant", "finance", "commerce"].some((token) =>
-      text.includes(token)
-    )
-  ) {
-    return "Grants & Consultancy" satisfies FieldDomain;
   }
 
   return "Technical, Management and Humanities" satisfies FieldDomain;

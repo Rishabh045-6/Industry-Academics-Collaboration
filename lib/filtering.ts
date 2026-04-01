@@ -4,8 +4,7 @@ type SearchValue = string | string[] | undefined;
 
 const FIELD_DOMAINS: FieldDomain[] = [
   "Health Sciences",
-  "Technical, Management and Humanities",
-  "Grants & Consultancy"
+  "Technical, Management and Humanities"
 ];
 
 function first(value: SearchValue) {
