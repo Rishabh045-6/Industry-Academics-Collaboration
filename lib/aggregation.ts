@@ -50,10 +50,12 @@ type EnrichedCollaboration = {
   industryName: string;
   thrustArea: string;
   mouDate: string;
+  durationMonths: number;
   isActive: boolean;
   newCourses: number;
   caseStudies: number;
   partialDelivery: number;
+  academicActivities: number;
   consultancyCount: number;
   consultancyAmount: number;
   researchGrantCount: number;
@@ -76,6 +78,8 @@ type EnrichedCollaboration = {
     workshops: number;
     conferences: number;
   };
+  consultancyProjects: Array<{ title: string; amount: number }>;
+  researchGrants: Array<{ title: string; fundingAgency: string; amount: number }>;
 };
 
 export type DashboardData = {
@@ -93,6 +97,7 @@ export type DashboardData = {
   };
   topIndustries: ChartPoint[];
   drilldown: DrilldownRow[];
+  records: EnrichedCollaboration[];
 };
 
 const FIELD_DOMAINS: FieldDomain[] = [
@@ -247,7 +252,7 @@ async function getScopedCollaborations(
   let collaborationQuery = supabase
     .from("collaborations")
     .select(
-      "id, university_id, campus_id, institute_id, department_id, industry_id, industry_name_snapshot, thrust_area, mou_date, is_active, new_courses, case_studies, partial_delivery, consultancy_count, consultancy_total_amount, research_grant_count, research_grant_total_amount, csr_fund, centres_of_excellence, innovation_labs, student_projects, internships, placements, universities(id, name, code), campuses(id, name, code), institutes(id, name, code), departments(id, name, code)"
+      "id, university_id, campus_id, institute_id, department_id, industry_id, industry_name_snapshot, thrust_area, mou_date, duration_months, academic_activities, is_active, new_courses, case_studies, partial_delivery, consultancy_count, consultancy_total_amount, research_grant_count, research_grant_total_amount, csr_fund, centres_of_excellence, innovation_labs, student_projects, internships, placements, universities(id, name, code), campuses(id, name, code), institutes(id, name, code), departments(id, name, code)"
     )
     .order("mou_date", { ascending: false });
 
@@ -281,7 +286,7 @@ async function getScopedCollaborations(
   const departmentIds = [...new Set(collaborations.map((item) => item.department_id).filter(Boolean))];
   const industryIds = [...new Set(collaborations.map((item) => item.industry_id).filter(Boolean))];
 
-  const [universitiesRes, campusesRes, institutesRes, departmentsRes, industriesRes, facultyRes, studentRes] =
+  const [universitiesRes, campusesRes, institutesRes, departmentsRes, industriesRes, facultyRes, studentRes, consultancyRes, grantsRes] =
     await Promise.all([
       universityIds.length
         ? supabase.from("universities").select("id, name, code").in("id", universityIds)
@@ -303,6 +308,12 @@ async function getScopedCollaborations(
         : Promise.resolve({ data: [] }),
       collaborationIds.length
         ? supabase.from("student_stats").select("collaboration_id, trainings, seminars, workshops, conferences").in("collaboration_id", collaborationIds)
+        : Promise.resolve({ data: [] }),
+      collaborationIds.length
+        ? supabase.from("consultancy_projects").select("collaboration_id, project_title, amount").in("collaboration_id", collaborationIds)
+        : Promise.resolve({ data: [] }),
+      collaborationIds.length
+        ? supabase.from("research_grants").select("collaboration_id, project_title, funding_agency, amount").in("collaboration_id", collaborationIds)
         : Promise.resolve({ data: [] })
     ]);
 
@@ -313,6 +324,20 @@ async function getScopedCollaborations(
   const industryMap = new Map((industriesRes.data ?? []).map((item) => [String(item.id), item.name]));
   const facultyMap = new Map((facultyRes.data ?? []).map((item) => [String(item.collaboration_id), item]));
   const studentMap = new Map((studentRes.data ?? []).map((item) => [String(item.collaboration_id), item]));
+  const consultancyMap = new Map<string, Array<{ collaboration_id: string; project_title: string; amount: number }>>();
+  (consultancyRes.data ?? []).forEach((item) => {
+    const key = String(item.collaboration_id);
+    const list = consultancyMap.get(key) ?? [];
+    list.push({ collaboration_id: key, project_title: item.project_title, amount: Number(item.amount) });
+    consultancyMap.set(key, list);
+  });
+  const grantsMap = new Map<string, Array<{ collaboration_id: string; project_title: string; funding_agency: string; amount: number }>>();
+  (grantsRes.data ?? []).forEach((item) => {
+    const key = String(item.collaboration_id);
+    const list = grantsMap.get(key) ?? [];
+    list.push({ collaboration_id: key, project_title: item.project_title, funding_agency: item.funding_agency ?? "", amount: Number(item.amount) });
+    grantsMap.set(key, list);
+  });
 
   return collaborations
     .map((item) => {
@@ -351,10 +376,12 @@ async function getScopedCollaborations(
         industryName: industryMap.get(String(item.industry_id)) ?? item.industry_name_snapshot ?? "Unknown industry",
         thrustArea: item.thrust_area ?? "-",
         mouDate: toDate(item.mou_date),
+        durationMonths: toNumber(item.duration_months),
         isActive: Boolean(item.is_active),
         newCourses: toNumber(item.new_courses),
         caseStudies: toNumber(item.case_studies),
         partialDelivery: toNumber(item.partial_delivery),
+        academicActivities: toNumber(item.academic_activities),
         consultancyCount: toNumber(item.consultancy_count),
         consultancyAmount: toNumber(item.consultancy_total_amount),
         researchGrantCount: toNumber(item.research_grant_count),
@@ -376,7 +403,16 @@ async function getScopedCollaborations(
           seminars: toNumber(students?.seminars),
           workshops: toNumber(students?.workshops),
           conferences: toNumber(students?.conferences)
-        }
+        },
+        consultancyProjects: (consultancyMap.get(String(item.id)) ?? []).map((project) => ({
+          title: project.project_title,
+          amount: project.amount
+        })),
+        researchGrants: (grantsMap.get(String(item.id)) ?? []).map((grant) => ({
+          title: grant.project_title,
+          fundingAgency: grant.funding_agency,
+          amount: grant.amount
+        }))
       } satisfies EnrichedCollaboration;
     })
     .filter((item) => matchesDashboardFilters(item, filters));
@@ -447,9 +483,7 @@ function buildHierarchy(records: EnrichedCollaboration[], profile: CurrentProfil
   const fieldScopedRecords = selectedField ? records.filter((record) => record.fieldDomain === selectedField) : records;
 
   const campusOptions = isUniversityRole
-    ? selectedField
-      ? uniqueOptions(fieldScopedRecords, (record) => record.campusId, (record) => record.campusName)
-      : []
+    ? uniqueOptions(fieldScopedRecords, (record) => record.campusId, (record) => record.campusName)
     : profile.role === "campus_coordinator"
       ? uniqueOptions(records, (record) => record.campusId, (record) => record.campusName)
       : [];
@@ -470,7 +504,7 @@ function buildHierarchy(records: EnrichedCollaboration[], profile: CurrentProfil
       ? uniqueOptions(records, (record) => record.instituteId, (record) => record.instituteName)
       : profile.role === "campus_coordinator"
         ? uniqueOptions(campusScopedRecords, (record) => record.instituteId, (record) => record.instituteName)
-        : isUniversityRole && selectedCampusId
+        : isUniversityRole
           ? uniqueOptions(campusScopedRecords, (record) => record.instituteId, (record) => record.instituteName)
           : [];
 
@@ -730,22 +764,6 @@ function buildInsights(params: {
 
   const insights: DashboardInsight[] = [];
 
-  if (topComparison) {
-    insights.push({
-      title: `Leading ${groupLabel}`,
-      value: topComparisonNames,
-      helper: `${formatCurrency(topComparison.value)} funding in the current scope.`
-    });
-  }
-
-  if (topIndustry) {
-    insights.push({
-      title: "Top industry partner",
-      value: topIndustryNames,
-      helper: `${topIndustry.value} collaborations in ${hierarchy.scopeLabel}.`
-    });
-  }
-
   if (internshipsLeader) {
     insights.push({
       title: "Strongest internships",
@@ -827,9 +845,19 @@ export async function getDashboardData(
     }
   ];
 
+  const toHalfYearBucket = (month: string) => {
+    const [year, monthPart] = month.split("-");
+    const monthNumber = Number(monthPart);
+    if (!year || Number.isNaN(monthNumber)) {
+      return month;
+    }
+    return `${year}-${monthNumber <= 6 ? "H1" : "H2"}`;
+  };
+
   const trendMap = new Map<string, TrendPoint>();
   records.forEach((item) => {
-    const month = item.mouDate === "-" ? "Unknown" : item.mouDate.slice(0, 7);
+    const rawMonth = item.mouDate === "-" ? "Unknown" : item.mouDate.slice(0, 7);
+    const month = rawMonth === "Unknown" ? "Unknown" : toHalfYearBucket(rawMonth);
     const current = trendMap.get(month) ?? { month, mous: 0, grants: 0, consultancy: 0 };
     current.mous += 1;
     current.grants += item.researchGrantAmount;
@@ -934,6 +962,10 @@ export async function getDashboardData(
     scopeId: item.id,
     scopeName: `${item.departmentName} / ${item.industryName}`,
     level: "department",
+    universityId: item.universityId ?? "-",
+    campusId: item.campusId,
+    instituteId: item.instituteId,
+    departmentId: item.departmentId,
     universityName: item.universityName,
     campusName: item.campusName,
     instituteName: item.instituteName,

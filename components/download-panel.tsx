@@ -51,12 +51,29 @@ function buildSheetData(
   return data;
 }
 
+function makeUniqueSheetName(name: string, usedNames: Set<string>) {
+  const baseName = sanitizeSheetName(name);
+  let uniqueName = baseName;
+  let suffix = 1;
+
+  while (usedNames.has(uniqueName)) {
+    const suffixText = `_${suffix}`;
+    uniqueName = `${baseName.slice(0, 31 - suffixText.length)}${suffixText}`;
+    suffix += 1;
+  }
+
+  usedNames.add(uniqueName);
+  return uniqueName;
+}
+
 function downloadWorkbook(filename: string, sheets: Array<{ name: string; data: Array<Array<string | number>> }>) {
   const workbook = XLSX.utils.book_new();
+  const usedNames = new Set<string>();
 
   sheets.forEach((sheet) => {
     const worksheet = XLSX.utils.aoa_to_sheet(sheet.data);
-    XLSX.utils.book_append_sheet(workbook, worksheet, sanitizeSheetName(sheet.name));
+    const sheetName = makeUniqueSheetName(sheet.name, usedNames);
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
   });
 
   const workbookArray = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
@@ -71,15 +88,26 @@ function downloadWorkbook(filename: string, sheets: Array<{ name: string; data: 
   URL.revokeObjectURL(url);
 }
 
-function groupRows(rows: DashboardData["drilldown"], key: (row: DashboardData["drilldown"][number]) => string) {
-  const groups = new Map<string, typeof rows>();
+function groupRows(
+  rows: DashboardData["drilldown"],
+  getKey: (row: DashboardData["drilldown"][number]) => string,
+  getLabel: (row: DashboardData["drilldown"][number]) => string
+) {
+  const groups = new Map<string, { groupLabel: string; groupRows: typeof rows }>();
+
   rows.forEach((row) => {
-    const label = key(row) || "unknown";
-    const group = groups.get(label) ?? [];
-    group.push(row);
-    groups.set(label, group);
+    const key = getKey(row) || `${row.departmentId || row.departmentName}`;
+    const label = getLabel(row) || "Unknown";
+    const group = groups.get(key);
+
+    if (group) {
+      group.groupRows.push(row);
+    } else {
+      groups.set(key, { groupLabel: label, groupRows: [row] });
+    }
   });
-  return Array.from(groups.entries()).map(([groupLabel, groupRows]) => ({ groupLabel, groupRows }));
+
+  return Array.from(groups.values());
 }
 
 function buildRow(record: DashboardData["drilldown"][number]) {
@@ -114,22 +142,22 @@ export function DownloadPanel({ role, data }: { role: RoleKey; data: DashboardDa
   const eligibleRows = useMemo(() => {
     let rows = data.drilldown;
     if (role === ROLES.INSTITUTE_COORDINATOR && selectedDepartmentId) {
-      rows = rows.filter((row) => row.departmentName === departmentOptions.find((option) => option.id === selectedDepartmentId)?.label || row.departmentName);
+      rows = rows.filter((row) => row.departmentId === selectedDepartmentId);
     }
     if (role === ROLES.CAMPUS_COORDINATOR && selectedInstituteId) {
-      rows = rows.filter((row) => row.instituteName === instituteOptions.find((option) => option.id === selectedInstituteId)?.label || row.instituteName);
+      rows = rows.filter((row) => row.instituteId === selectedInstituteId);
     }
     if ((role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN) && selectedCampusId) {
-      rows = rows.filter((row) => row.campusName === campusOptions.find((option) => option.id === selectedCampusId)?.label || row.campusName);
+      rows = rows.filter((row) => row.campusId === selectedCampusId);
     }
     if ((role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN) && selectedInstituteId) {
-      rows = rows.filter((row) => row.instituteName === instituteOptions.find((option) => option.id === selectedInstituteId)?.label || row.instituteName);
+      rows = rows.filter((row) => row.instituteId === selectedInstituteId);
     }
     if ((role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN) && selectedDepartmentId) {
-      rows = rows.filter((row) => row.departmentName === departmentOptions.find((option) => option.id === selectedDepartmentId)?.label || row.departmentName);
+      rows = rows.filter((row) => row.departmentId === selectedDepartmentId);
     }
     return rows;
-  }, [data.drilldown, role, selectedCampusId, selectedInstituteId, selectedDepartmentId, campusOptions, instituteOptions, departmentOptions]);
+  }, [data.drilldown, role, selectedCampusId, selectedInstituteId, selectedDepartmentId]);
 
   const reportKpis = useMemo(() => data.kpis.map((item) => ({ label: item.label, value: item.value })), [data.kpis]);
   const currentScopeLabel = data.hierarchy.scopeLabel;
@@ -164,19 +192,42 @@ export function DownloadPanel({ role, data }: { role: RoleKey; data: DashboardDa
             { name: sheetName, rows: eligibleRows }
           ]);
         } else {
-          const groups = groupRows(eligibleRows, (row) => row.departmentName);
+          const groups = groupRows(
+            eligibleRows,
+            (row) => row.departmentId || row.departmentName,
+            (row) => row.departmentName
+          );
           createAndDownloadWorkbook(`${currentScopeLabel}_departments`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
         }
       } else if (role === ROLES.CAMPUS_COORDINATOR) {
         if (selectedInstituteId) {
           const institute = instituteOptions.find((option) => option.id === selectedInstituteId);
           const sheetName = institute?.label ?? selectedInstituteId;
-          createAndDownloadWorkbook(`${currentScopeLabel}_${sheetName}`, [
-            { name: sheetName, rows: eligibleRows }
-          ]);
+          const groups = groupRows(
+            eligibleRows,
+            (row) => row.departmentId || row.departmentName,
+            (row) => row.departmentName
+          );
+          if (groups.length > 1) {
+            createAndDownloadWorkbook(`${currentScopeLabel}_${sheetName}`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+          } else {
+            createAndDownloadWorkbook(`${currentScopeLabel}_${sheetName}`, [
+              { name: sheetName, rows: eligibleRows }
+            ]);
+          }
         } else {
-          const groups = groupRows(eligibleRows, (row) => row.instituteName);
-          createAndDownloadWorkbook(`${currentScopeLabel}_institutes`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+          const groups = groupRows(
+            eligibleRows,
+            (row) => `${row.instituteId}:${row.departmentId}`,
+            (row) => `${row.instituteName} / ${row.departmentName}`
+          );
+          if (groups.length > 0) {
+            createAndDownloadWorkbook(`${currentScopeLabel}_departments`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+          } else {
+            createAndDownloadWorkbook(`${currentScopeLabel}_departments`, [
+              { name: currentScopeLabel, rows: eligibleRows }
+            ]);
+          }
         }
       } else {
         const selectedGroup = selectedDepartmentId || selectedInstituteId || selectedCampusId;
@@ -187,13 +238,59 @@ export function DownloadPanel({ role, data }: { role: RoleKey; data: DashboardDa
               : selectedInstituteId
               ? instituteOptions.find((option) => option.id === selectedInstituteId)?.label ?? selectedInstituteId
               : campusOptions.find((option) => option.id === selectedCampusId)?.label ?? selectedCampusId;
-          createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}`, [
-            { name: selectedLabel, rows: eligibleRows }
-          ]);
+
+          if (selectedDepartmentId) {
+            createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}`, [
+              { name: selectedLabel, rows: eligibleRows }
+            ]);
+          } else if (selectedInstituteId) {
+            const groups = groupRows(
+              eligibleRows,
+              (row) => row.departmentId || row.departmentName,
+              (row) => row.departmentName
+            );
+            if (groups.length > 0) {
+              createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+            } else {
+              createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}`, [
+                { name: selectedLabel, rows: eligibleRows }
+              ]);
+            }
+          } else if (selectedCampusId) {
+            const groups = groupRows(
+              eligibleRows,
+              (row) => `${row.instituteId}:${row.departmentId}`,
+              (row) => `${row.instituteName} / ${row.departmentName}`
+            );
+            if (groups.length > 0) {
+              createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}_departments`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+            } else {
+              createAndDownloadWorkbook(`${currentScopeLabel}_${selectedLabel}_departments`, [
+                { name: selectedLabel, rows: eligibleRows }
+              ]);
+            }
+          } else {
+            const groups = groupRows(
+              eligibleRows,
+              (row) => `${row.campusId}:${row.instituteId}:${row.departmentId}`,
+              (row) => `${row.campusName} / ${row.instituteName} / ${row.departmentName}`
+            );
+            if (groups.length > 0) {
+              createAndDownloadWorkbook(`${currentScopeLabel}_hierarchy`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+            } else {
+              createAndDownloadWorkbook(`${currentScopeLabel}_hierarchy`, [
+                { name: selectedLabel, rows: eligibleRows }
+              ]);
+            }
+          }
         } else {
-          const groups = groupRows(eligibleRows, (row) => row.campusName);
+          const groups = groupRows(
+            eligibleRows,
+            (row) => `${row.campusId}:${row.instituteId}:${row.departmentId}`,
+            (row) => `${row.campusName} / ${row.instituteName} / ${row.departmentName}`
+          );
           if (groups.length > 1) {
-            createAndDownloadWorkbook(`${currentScopeLabel}_campuses`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
+            createAndDownloadWorkbook(`${currentScopeLabel}_hierarchy`, groups.map(({ groupLabel, groupRows }) => ({ name: groupLabel, rows: groupRows })));
           } else {
             createAndDownloadWorkbook(currentScopeLabel, [
               { name: currentScopeLabel, rows: eligibleRows }
@@ -233,7 +330,7 @@ Total records: ${data.drilldown.length}`);
           <div className="grid gap-3 md:grid-cols-3">
             {role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN ? (
               <select
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                className="input-field"
                 value={selectedCampusId}
                 onChange={(event) => {
                   setSelectedCampusId(event.target.value);
@@ -252,7 +349,7 @@ Total records: ${data.drilldown.length}`);
 
             {(role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN || role === ROLES.CAMPUS_COORDINATOR) ? (
               <select
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                className="input-field"
                 value={selectedInstituteId}
                 onChange={(event) => {
                   setSelectedInstituteId(event.target.value);
@@ -270,7 +367,7 @@ Total records: ${data.drilldown.length}`);
 
             {(role === ROLES.INSTITUTE_COORDINATOR || role === ROLES.DEPUTY_DIRECTOR || role === ROLES.VICE_CHANCELLOR || role === ROLES.CORPORATE_RELATIONS_DIRECTOR || role === ROLES.ADMIN) ? (
               <select
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                className="input-field"
                 value={selectedDepartmentId}
                 onChange={(event) => setSelectedDepartmentId(event.target.value)}
               >
@@ -289,7 +386,7 @@ Total records: ${data.drilldown.length}`);
           {canDownload ? (
             <button
               type="button"
-              className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="primary-button disabled:cursor-not-allowed disabled:bg-slate-300"
               disabled={isDownloading || data.drilldown.length === 0}
               onClick={handleDownload}
             >
@@ -299,7 +396,7 @@ Total records: ${data.drilldown.length}`);
           {canSend ? (
             <button
               type="button"
-              className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="secondary-button"
               onClick={handleSendReport}
             >
               Send report

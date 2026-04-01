@@ -58,7 +58,7 @@ export function CollaborationDownloadButton({ rows }: { rows: CollaborationListI
     <button
       type="button"
       onClick={handleDownload}
-      className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+      className="primary-button"
     >
       Download records
     </button>

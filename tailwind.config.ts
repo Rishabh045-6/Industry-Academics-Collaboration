@@ -9,6 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: "#1E3A8A",
+        secondary: "#3B82F6",
+        accent: "#14B8A6",
+        success: "#22C55E",
+        purple: "#8B5CF6",
+        background: "#F8FAFC",
+        surface: "#ffffff",
         ink: "#0f172a",
         surf: "#f8fafc",
         ember: "#2563eb",
@@ -28,7 +35,9 @@ const config: Config = {
         }
       },
       boxShadow: {
-        panel: "0 18px 40px rgba(15, 23, 42, 0.08)"
+        panel: "0 4px 12px rgba(0, 0, 0, 0.05)",
+        soft: "0 2px 8px rgba(0, 0, 0, 0.05)",
+        deep: "0 24px 60px rgba(30, 58, 138, 0.18)"
       }
     }
   },

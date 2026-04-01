@@ -29,7 +29,7 @@ function SelectField({
 }) {
   return (
     <select
-      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 disabled:cursor-not-allowed disabled:bg-slate-50"
+      className="input-field disabled:cursor-not-allowed disabled:bg-slate-100"
       defaultValue={defaultValue ?? ""}
       disabled={disabled}
       name={name}
@@ -145,34 +145,34 @@ export function FilterBar({ role, roleKey, filters, hierarchy, resetHref }: Filt
         ) : null}
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          <select className="rounded-2xl border border-slate-200 bg-white px-4 py-3" defaultValue={filters.active ?? "all"} name="active">
+          <select className="input-field" defaultValue={filters.active ?? "all"} name="active">
             <option value="all">All status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
           <input
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+            className="input-field"
             defaultValue={filters.industry ?? ""}
             name="industry"
             placeholder="Industry"
             type="text"
           />
           <input
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
+            className="input-field"
             defaultValue={filters.thrustArea ?? ""}
             name="thrust"
             placeholder="Thrust area"
             type="text"
           />
-          <input className="rounded-2xl border border-slate-200 bg-white px-4 py-3" defaultValue={filters.fromDate ?? ""} name="from" type="date" />
-          <input className="rounded-2xl border border-slate-200 bg-white px-4 py-3" defaultValue={filters.toDate ?? ""} name="to" type="date" />
+          <input className="input-field" defaultValue={filters.fromDate ?? ""} name="from" type="date" />
+          <input className="input-field" defaultValue={filters.toDate ?? ""} name="to" type="date" />
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <button className="rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700" type="submit">
+          <button className="primary-button" type="submit">
             Apply filters
           </button>
-          <Link className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={resetHref}>
+          <Link className="secondary-button" href={resetHref}>
             Clear filters
           </Link>
         </div>

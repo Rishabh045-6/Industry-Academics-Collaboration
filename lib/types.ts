@@ -85,6 +85,10 @@ export type DrilldownRow = {
   scopeId: string;
   scopeName: string;
   level: ScopeLevel;
+  universityId: string;
+  campusId: string;
+  instituteId: string;
+  departmentId: string;
   universityName: string;
   campusName: string;
   instituteName: string;

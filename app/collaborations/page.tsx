@@ -1,10 +1,11 @@
 ﻿import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
+import { DownloadPanel } from "@/components/download-panel";
 import { FilterBar } from "@/components/filter-bar";
 import { RecordTable } from "@/components/record-table";
-import { CollaborationDownloadButton } from "@/components/collaboration-download-button";
 import { parseDashboardFilters } from "@/lib/filtering";
 import { listCollaborationsForProfile } from "@/lib/collaborations";
+import { getDashboardData } from "@/lib/aggregation";
 import { roleLabels } from "@/lib/rbac";
 import { requireRole } from "@/lib/require-role";
 import { ALL_ROLES, ROLES } from "@/lib/roles";
@@ -47,8 +48,9 @@ export default async function CollaborationsPage({
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const filters = parseDashboardFilters(params);
   const rows = await listCollaborationsForProfile(profile, filters);
-  const canCreate = role === ROLES.DEPARTMENT_COORDINATOR || role === ROLES.ADMIN;
   const missingScope = !hasAssignedScope(profile);
+  const dashboardData = missingScope ? null : await getDashboardData(profile, filters);
+  const canCreate = role === ROLES.DEPARTMENT_COORDINATOR || role === ROLES.ADMIN;
 
   return (
     <AppShell role={role} title="Collaborations">
@@ -62,7 +64,6 @@ export default async function CollaborationsPage({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <CollaborationDownloadButton rows={rows} />
           {canCreate ? (
             <Link className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white" href="/collaborations/new">
               Add Collaboration
@@ -85,6 +86,7 @@ export default async function CollaborationsPage({
         </section>
       ) : (
         <>
+          {dashboardData ? <DownloadPanel role={role} data={dashboardData} /> : null}
           <FilterBar role={roleLabels[role]} filters={filters} resetHref="/collaborations" />
           <RecordTable rows={rows} />
         </>

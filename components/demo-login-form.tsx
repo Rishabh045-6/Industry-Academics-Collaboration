@@ -95,16 +95,6 @@ const campusHierarchy: CampusOption[] = [
         ]
       },
       {
-        value: "LMS-BLR",
-        label: "Welcomgroup Graduate School of Hotel Administration, Bangalore",
-        departments: [
-          { value: "LMS-BLR-1", label: "Dept 1" },
-          { value: "LMS-BLR-2", label: "Dept 2" },
-          { value: "LMS-BLR-3", label: "Dept 3" },
-          { value: "LMS-BLR-4", label: "Dept 4" }
-        ]
-      },
-      {
         value: "DLHS-BLR",
         label: "Department of Liberal and Health Sciences, Bangalore",
         departments: [

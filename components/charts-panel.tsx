@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import { InfoTooltip } from "./info-tooltip";
 
-const piePalette = ["#2563eb", "#0f172a", "#60a5fa", "#94a3b8", "#cbd5e1", "#38bdf8"];
+const piePalette = ["#3B82F6", "#1E40AF", "#14B8A6", "#8B5CF6", "#60A5FA", "#94A3B8"];
 
 function truncateLabel(value: string, max = 18) {
   return value.length > max ? `${value.slice(0, max - 1)}…` : value;
@@ -27,6 +27,12 @@ function truncateLabel(value: string, max = 18) {
 function formatMonthLabel(value: string) {
   if (!value || value === "Unknown") {
     return value;
+  }
+
+  if (/^\d{4}-H[12]$/.test(value)) {
+    const [year, half] = value.split("-");
+    const shortYear = year.slice(-2);
+    return half === "H1" ? `Jan-Jun ${shortYear}` : `Jul-Dec ${shortYear}`;
   }
 
   const date = new Date(`${value}-01T00:00:00`);
@@ -93,7 +99,7 @@ function PieLegend({ payload }: { payload?: Array<{ color?: string; payload?: { 
   return (
     <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
       {payload.map((entry) => (
-        <div key={entry.payload?.name} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2">
+        <div key={entry.payload?.name} className="flex items-center justify-between gap-3 rounded-xl bg-[#EFF6FF] px-3 py-2">
           <div className="flex min-w-0 items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
             <span className="truncate font-medium text-slate-700">{entry.payload?.shortName ?? entry.payload?.name}</span>
@@ -296,7 +302,7 @@ export function ChartsPanel({
                   <Label value="Funding (Lakhs)" angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
                 </YAxis>
                 <Tooltip content={<ComparisonTooltip />} />
-                <Bar dataKey="value" fill="#2563eb" radius={[10, 10, 0, 0]} maxBarSize={46} />
+                <Bar dataKey="value" fill="#14B8A6" radius={[10, 10, 0, 0]} maxBarSize={46} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -309,12 +315,14 @@ export function ChartsPanel({
         <div className="h-72">
           {hasPerformersData ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={performers} margin={{ top: 8, right: 10, left: 0, bottom: 12 }} barCategoryGap="24%">
+              <BarChart data={performers} margin={{ top: 8, right: 10, left: 24, bottom: 12 }} barCategoryGap="24%">
                 <CartesianGrid stroke="#e2e8f0" vertical={false} />
                 <XAxis dataKey="name" stroke="#64748b" tickFormatter={(value) => truncateLabel(String(value), 14)} interval={0} angle={-10} textAnchor="end" height={58} />
-                <YAxis stroke="#64748b" allowDecimals={false} width={52} />
+                <YAxis stroke="#64748b" allowDecimals={false} width={52}>
+                  <Label value="Performance score" angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
+                </YAxis>
                 <Tooltip content={<DefaultTooltip />} />
-                <Bar dataKey="score" fill="#2563eb" radius={[10, 10, 0, 0]} maxBarSize={42} />
+                <Bar dataKey="score" fill="#3B82F6" radius={[10, 10, 0, 0]} maxBarSize={42} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -335,8 +343,8 @@ export function ChartsPanel({
                 </YAxis>
                 <Tooltip content={<DefaultTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: 8 }} />
-                <Bar dataKey="faculty" stackId="activities" fill="#0f172a" radius={[10, 10, 0, 0]} maxBarSize={42} />
-                <Bar dataKey="students" stackId="activities" fill="#60a5fa" radius={[10, 10, 0, 0]} maxBarSize={42} />
+                <Bar dataKey="faculty" stackId="activities" fill="#1E3A8A" radius={[10, 10, 0, 0]} maxBarSize={42} />
+                <Bar dataKey="students" stackId="activities" fill="#3B82F6" radius={[10, 10, 0, 0]} maxBarSize={42} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -350,18 +358,25 @@ export function ChartsPanel({
           <div className="h-80">
             {hasTrendData ? (
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={trends} margin={{ top: 8, right: 20, left: 0, bottom: 8 }}>
+                <ComposedChart data={trends} margin={{ top: 8, right: 20, left: 48, bottom: 24 }}>
                   <CartesianGrid stroke="#cbd5e1" vertical={false} />
-                  <XAxis dataKey="month" stroke="#64748b" tickFormatter={formatMonthLabel}>
-                    <Label value="Month" offset={-2} position="insideBottom" />
+                  <XAxis
+                    dataKey="month"
+                    stroke="#64748b"
+                    ticks={trends.map((item) => item.month)}
+                    tickFormatter={formatMonthLabel}
+                    interval={0}
+                    padding={{ left: 20, right: 20 }}
+                  >
+                    <Label value="Period" offset={-2} position="insideBottom" />
                   </XAxis>
-                  <YAxis yAxisId="amount" orientation="right" stroke="#2563eb" tickFormatter={(value) => formatLakhs(Number(value))} width={52}>
-                    <Label value="Amount (Lakhs)" angle={90} position="insideRight" style={{ textAnchor: "middle" }} />
+                  <YAxis yAxisId="amount" orientation="left" stroke="#2563eb" tickFormatter={(value) => formatLakhs(Number(value))} width={52}>
+                    <Label value="Amount (Lakhs)" angle={-90} position="insideLeft" style={{ textAnchor: "middle" }} />
                   </YAxis>
                   <Tooltip content={<TrendTooltip />} />
-                  <Legend wrapperStyle={{ paddingTop: 8 }} formatter={(value) => (value === "grants" ? "Research grants" : "Consultancy")} />
-                  <Line yAxisId="amount" type="monotone" dataKey="grants" name="Research grants" stroke="#2563eb" strokeWidth={3} dot={{ r: 3 }} />
-                  <Line yAxisId="amount" type="monotone" dataKey="consultancy" name="Consultancy" stroke="#60a5fa" strokeWidth={3} dot={{ r: 3 }} />
+                  <Legend wrapperStyle={{ paddingTop: 8 }} />
+                  <Line yAxisId="amount" type="monotone" dataKey="grants" name="Research grants" stroke="#3B82F6" strokeWidth={3} dot={{ r: 3 }} />
+                  <Line yAxisId="amount" type="monotone" dataKey="consultancy" name="Consultancy" stroke="#1E40AF" strokeWidth={3} dot={{ r: 3 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             ) : (

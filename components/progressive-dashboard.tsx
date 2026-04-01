@@ -3,7 +3,6 @@
 import { useState, type KeyboardEvent } from "react";
 import { ChartsPanel } from "@/components/charts-panel";
 import { DrilldownTable } from "@/components/drilldown-table";
-import { DownloadPanel } from "@/components/download-panel";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { KpiGrid } from "@/components/kpi-grid";
 import { DashboardData } from "@/lib/aggregation";
@@ -32,7 +31,7 @@ function SummaryCard({
     <div
       role="button"
       tabIndex={0}
-      className="panel p-5 text-left transition hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="panel p-5 text-left transition hover:border-secondary/40 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-secondary/30"
       onClick={onClick}
       onKeyDown={handleKeyDown}
     >
@@ -96,7 +95,6 @@ export function ProgressiveDashboard({
     return (
       <>
         {data.insights.length > 0 ? insightsBlock : null}
-        <DownloadPanel role={role} data={data} />
         <KpiGrid items={data.kpis} />
         <ChartsPanel
           activeStatus={data.charts.activeStatus}
@@ -124,7 +122,7 @@ export function ProgressiveDashboard({
             </div>
             {!showDetails ? (
               <button
-                className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white"
+                className="primary-button"
                 onClick={() => setShowDetails(true)}
                 type="button"
               >
@@ -132,7 +130,7 @@ export function ProgressiveDashboard({
               </button>
             ) : (
               <button
-                className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700"
+                className="secondary-button"
                 onClick={() => setShowDetails(false)}
                 type="button"
               >
@@ -148,52 +146,10 @@ export function ProgressiveDashboard({
 
         {data.insights.length > 0 ? insightsBlock : null}
 
-        <DownloadPanel role={role} data={data} />
-
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {summaryKpis.map((item) => (
             <SummaryCard key={item.label} label={item.label} value={item.value} helper={item.insight ?? item.helper} onClick={() => setShowDetails(true)} />
           ))}
-        </section>
-
-        <ChartsPanel
-          activeStatus={data.charts.activeStatus}
-          thrustArea={data.charts.thrustArea}
-          comparison={data.charts.comparison}
-          activity={data.charts.activity}
-          trends={data.charts.trends}
-          performers={data.charts.performers}
-          meta={data.chartMeta}
-          showTrend={false}
-        />
-
-        <section className="panel p-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="eyebrow text-blue-600">Top industries</p>
-              <h3 className="mt-2 text-xl font-semibold text-slate-900">{data.chartMeta.topIndustriesTitle}</h3>
-            </div>
-            <button className="text-sm font-semibold text-blue-600" onClick={() => setShowDetails(true)} type="button">
-              Drill down
-            </button>
-          </div>
-          <div className="mt-4 space-y-3">
-            {data.topIndustries.length > 0 ? (
-              data.topIndustries.map((industry, index) => (
-                <div key={industry.name} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      {index + 1}. {industry.name}
-                    </p>
-                    <p className="text-xs text-slate-500">Collaboration count</p>
-                  </div>
-                  <p className="text-lg font-semibold text-blue-600">{industry.value}</p>
-                </div>
-              ))
-            ) : (
-              <p className="rounded-2xl bg-slate-50 px-4 py-6 text-sm text-slate-500">No summary data available for the current scope and filters.</p>
-            )}
-          </div>
         </section>
       </section>
 
@@ -208,6 +164,33 @@ export function ProgressiveDashboard({
             performers={data.charts.performers}
             meta={data.chartMeta}
           />
+
+          <section className="panel p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="eyebrow text-blue-600">Top industries</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900">{data.chartMeta.topIndustriesTitle}</h3>
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {data.topIndustries.length > 0 ? (
+                data.topIndustries.map((industry, index) => (
+                  <div key={industry.name} className="flex items-center justify-between rounded-2xl bg-[#EFF6FF] px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {index + 1}. {industry.name}
+                      </p>
+                      <p className="text-xs text-slate-500">Collaboration count</p>
+                    </div>
+                    <p className="text-lg font-semibold text-blue-600">{industry.value}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="rounded-2xl bg-[#EFF6FF] px-4 py-6 text-sm text-slate-700">No summary data available for the current scope and filters.</p>
+              )}
+            </div>
+          </section>
+
           {includeTable ? <DrilldownTable rows={data.drilldown} /> : null}
         </section>
       ) : null}

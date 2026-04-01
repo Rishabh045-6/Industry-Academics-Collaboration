@@ -10,7 +10,7 @@ export function RecordTable({ rows }: { rows: CollaborationListItem[] }) {
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-surf">
+          <thead className="bg-[#EFF6FF]">
             <tr>
               <th className="px-5 py-4">Industry</th>
               <th className="px-5 py-4">Thrust area</th>
@@ -24,7 +24,7 @@ export function RecordTable({ rows }: { rows: CollaborationListItem[] }) {
           </thead>
           <tbody>
             {rows.map((item) => (
-              <tr key={item.id} className="border-t border-slate-100">
+              <tr key={item.id} className="border-t border-slate-100 odd:bg-white even:bg-[#F8FAFC] hover:bg-[#EFF6FF]">
                 <td className="px-5 py-4 font-semibold">
                   <Link href={`/collaborations/${item.id}`}>{item.industryName}</Link>
                 </td>
@@ -37,7 +37,7 @@ export function RecordTable({ rows }: { rows: CollaborationListItem[] }) {
                 <td className="px-5 py-4">
                   <Link
                     href={`/collaborations/${item.id}`}
-                    className="inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    className="primary-button inline-flex items-center justify-center px-4 py-2 text-sm font-semibold"
                   >
                     View details
                   </Link>
